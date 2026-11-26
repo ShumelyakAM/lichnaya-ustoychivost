@@ -1,0 +1,148 @@
+media:
+  input: hub/assets/uploads
+  output: /lichnaya-ustoychivost/hub/assets/uploads
+  rename: safe
+  categories: [image]
+
+settings:
+  content:
+    merge: true
+
+content:
+  - name: articles
+    label: Статьи блога
+    type: collection
+    path: site-content/articles
+    format: json
+    filename: "{fields.slug}.json"
+    operations:
+      rename: false
+      delete: false
+    view:
+      primary: title
+      fields: [title, category, date_iso]
+    fields:
+      - name: slug
+        label: Адрес статьи латиницей
+        type: string
+        required: true
+        pattern: "^[a-z0-9-]+$"
+        description: Не меняйте адрес уже опубликованной статьи.
+      - name: title
+        label: Заголовок
+        type: string
+        required: true
+      - name: description
+        label: Описание для поиска и карточки
+        type: text
+        required: true
+      - name: category
+        label: Тема
+        type: string
+        required: true
+      - name: eyebrow
+        label: Надпись над заголовком
+        type: string
+        required: true
+      - name: lead
+        label: Вступление
+        type: text
+        required: true
+      - name: date_iso
+        label: Дата публикации
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: product
+        label: Код связанного продукта
+        type: string
+        required: true
+      - name: body
+        label: Текст статьи
+        type: rich-text
+        required: true
+        options:
+          format: html
+
+  - name: products
+    label: Цифровые продукты
+    type: file
+    path: site-content/products.json
+    format: json
+    list: true
+    fields:
+      - name: slug
+        label: Код продукта латиницей
+        type: string
+        required: true
+        pattern: "^[a-z0-9-]+$"
+      - name: title
+        label: Название
+        type: string
+        required: true
+      - name: category
+        label: Раздел каталога
+        type: string
+        required: true
+      - name: format
+        label: Формат
+        type: string
+        required: true
+      - name: status
+        label: Статус
+        type: string
+        required: true
+      - name: description
+        label: Описание
+        type: text
+        required: true
+      - name: audience
+        label: Для кого
+        type: text
+        required: true
+      - name: includes
+        label: Что входит
+        type: string
+        list: true
+      - name: landing
+        label: Адрес готовой страницы
+        type: string
+        description: Для нового продукта оставьте пустым — страница создастся автоматически.
+      - name: contact_url
+        label: Ссылка для связи
+        type: string
+      - name: visible
+        label: Показывать в каталоге
+        type: boolean
+
+  - name: program
+    label: Программа «Личная устойчивость»
+    type: file
+    path: site-content/program.json
+    format: json
+    fields:
+      - name: heading
+        label: Заголовок блока
+        type: string
+      - name: introduction
+        label: Вступление
+        type: text
+      - name: modules
+        label: Модули
+        type: object
+        list: true
+        fields:
+          - name: number
+            label: Номер
+            type: string
+          - name: title
+            label: Название
+            type: string
+          - name: points
+            label: Темы
+            type: string
+            list: true
+          - name: practice
+            label: Практика
+            type: text

@@ -3,6 +3,7 @@ import base64
 import hashlib
 import json
 import posixpath
+from datetime import date
 from html import escape as html_escape
 from pathlib import Path
 from xml.sax.saxutils import escape as xml_escape
@@ -13,8 +14,14 @@ PROJECT = Path(__file__).resolve().parents[1]
 SITE = PROJECT / "public-site" if (PROJECT / "public-site").exists() else PROJECT
 CONTENT = PROJECT / "site-content"
 BASE = "https://shumelyakam.github.io/lichnaya-ustoychivost/"
-articles = json.loads((CONTENT / "articles.json").read_text(encoding="utf-8"))
+articles = [json.loads(path.read_text(encoding="utf-8")) for path in sorted((CONTENT / "articles").glob("*.json"))]
 products = [p for p in json.loads((CONTENT / "products.json").read_text(encoding="utf-8")) if p.get("visible")]
+MONTHS = ("января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
+
+
+def display_date(value):
+    day = date.fromisoformat(value)
+    return f"{day.day} {MONTHS[day.month - 1]} {day.year}"
 
 
 def esc(value):
@@ -130,8 +137,8 @@ def article_page(item):
     article.xpath(".//h1")[0].text = item["title"]
     article.xpath(".//p[contains(@class,'eyebrow')]")[0].text = item["eyebrow"]
     article.xpath(".//p[contains(@class,'standfirst')]")[0].text = item["lead"]
-    article.xpath(".//div[contains(@class,'article-meta')]")[0].text = f"Андрей Шумеляк · {item['date_display']}"
-    replace_children(article.xpath(".//div[contains(@class,'article-body')]")[0], (CONTENT / item["body"]).read_text(encoding="utf-8"))
+    article.xpath(".//div[contains(@class,'article-meta')]")[0].text = f"Андрей Шумеляк · {display_date(item['date_iso'])}"
+    replace_children(article.xpath(".//div[contains(@class,'article-body')]")[0], item["body"])
     ending = article.xpath(".//div[contains(@class,'article-end')]")[0]
     product = next((p for p in products if p["slug"] == item.get("product")), products[0])
     related = [a for a in articles if a["slug"] != item["slug"] and a["category"] == item["category"]][:2]
